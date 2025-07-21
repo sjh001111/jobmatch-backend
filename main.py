@@ -26,24 +26,24 @@ def read_root():
 
 
 # 요청 데이터 구조
-class AnalyzeRequest(BaseModel):
+class AnalyseRequest(BaseModel):
     resume: str
     job_posting: str
     salary_expectation: int = None  # 희망연봉 (옵셔널)
 
 
 # 응답 데이터 구조
-class AnalyzeResponse(BaseModel):
+class AnalyseResponse(BaseModel):
     overall_score: int
     category_scores: dict
     recommendation: str
     reasons: list[str]
 
 
-@app.post("/analyze", response_model=AnalyzeResponse)
-def analyze_resume(request: AnalyzeRequest):
+@app.post("/analyse", response_model=AnalyseResponse)
+async def analyse_resume(request: AnalyseRequest):
     # 임시 응답
-    return AnalyzeResponse(
+    return AnalyseResponse(
         overall_score=87,
         category_scores={"기술스택": 90, "경력": 85, "학력": 80},
         recommendation="지원 추천",
