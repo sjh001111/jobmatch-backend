@@ -1,9 +1,10 @@
-from pydantic import BaseModel
-
-from pydantic import BaseModel
 from typing import Optional, List
 
-VERY_HIGH = "매우 높음"
+from pydantic import BaseModel
+
+
+class MatchLevel(BaseModel):
+    VERY_HIGH = "매우 높음"
     HIGH = "높음"
     MEDIUM = "보통"
     LOW = "낮음"

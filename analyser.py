@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from google.genai import types
 
 from gemini import Gemini
-from schema import JobEvaluationSchema
+# from schema import JobEvaluationSchema
 
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
@@ -30,9 +30,9 @@ async def analyse(resume, job_description):
     #             mime_type="application/pdf",
     #         )
     #     )
-    res = await gemini.query(contents, schema=JobEvaluationSchema)
-    print(res)
-    return res
+    res = await gemini.query(contents) # schema=None
+    print(res.response)
+    return res.response
 
 async def main():
     pass

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from analyser import analyse
 
 app = FastAPI()
 
@@ -38,16 +39,19 @@ class AnalyseResponse(BaseModel):
     category_scores: dict
     recommendation: str
     reasons: list[str]
+    test: str
 
 
 @app.post("/analyse", response_model=AnalyseResponse)
 async def analyse_resume(request: AnalyseRequest):
+    resp = await analyse(request.resume, request.job_posting)
     # 임시 응답
     return AnalyseResponse(
         overall_score=87,
         category_scores={"기술스택": 90, "경력": 85, "학력": 80},
         recommendation="지원 추천",
         reasons=["기술스택이 완벽히 일치합니다", "경력이 적절합니다"],
+        test=resp
     )
 
     # 서버 실행 (개발용)
