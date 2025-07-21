@@ -1,7 +1,18 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, Form, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List, Optional
 from analyser import analyse
+
+
+# 응답 데이터 구조만 Pydantic 사용
+class AnalyseResponse(BaseModel):
+    overall_score: int
+    category_scores: dict
+    recommendation: str
+    reasons: list[str]
+    test: str
+
 
 app = FastAPI()
 
@@ -14,47 +25,66 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# # FastAPI 앱 생성
-# app = FastAPI(
-#     title="JobMatch API", description="AI 이력서 매칭 분석 API", version="1.0.0"
-# )
-
 
 # 기본 엔드포인트
 @app.get("/")
 def read_root():
-    return {"message": "JobMatch API가 실행 중입니다!"}
-
-
-# 요청 데이터 구조
-class AnalyseRequest(BaseModel):
-    resume: str
-    job_posting: str
-    salary_expectation: int = None  # 희망연봉 (옵셔널)
-
-
-# 응답 데이터 구조
-class AnalyseResponse(BaseModel):
-    overall_score: int
-    category_scores: dict
-    recommendation: str
-    reasons: list[str]
-    test: str
+    return {"message": "https://github.com/sjh001111"}
 
 
 @app.post("/analyse", response_model=AnalyseResponse)
-async def analyse_resume(request: AnalyseRequest):
-    resp = await analyse(request.resume, request.job_posting)
-    # 임시 응답
+async def analyse_resume(
+    job_posting: str = Form(...),
+    expected_salary: Optional[str] = Form(None),
+    additional_info: Optional[str] = Form(None),
+    response_language: str = Form("korean"),
+    resume_files: List[UploadFile] = File(...),
+    additional_files: Optional[List[UploadFile]] = File(None),
+):
+    files = []
+    texts = [job_posting]
+
+    # 업로드된 파일들 처리
+    resume_contents = []
+    for file in resume_files:
+        files.append(await file.read())
+        # resume_contents.append(
+        #     {
+        #         "filename": file.filename,
+        #         "content": content,
+        #         "content_type": file.content_type,
+        #     }
+        # )
+
+    if additional_files:
+        for file in additional_files:
+            files.append(await file.read())
+
+
+    # 분석 함수 호출
+    resp = await analyse(files, texts)
+
     return AnalyseResponse(
         overall_score=87,
-        category_scores={"기술스택": 90, "경력": 85, "학력": 80},
-        recommendation="지원 추천",
-        reasons=["기술스택이 완벽히 일치합니다", "경력이 적절합니다"],
-        test=resp
+        category_scores={
+            "Technical Skills": 90,
+            "Experience": 85,
+            "Education": 80,
+            "Salary Match": 75,
+        },
+        recommendation="Recommended to Apply",
+        reasons=[
+            "Technical skills perfectly match job requirements",
+            "Experience level is appropriate",
+            f"Analysis language: {response_language}",
+            (
+                f"Expected salary: {expected_salary}"
+                if expected_salary
+                else "No salary specified"
+            ),
+        ],
+        test=resp,
     )
-
-    # 서버 실행 (개발용)
 
 
 if __name__ == "__main__":

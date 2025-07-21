@@ -1,5 +1,6 @@
 import asyncio
 import os
+from typing import List
 
 from dotenv import load_dotenv
 from google.genai import types
@@ -14,22 +15,19 @@ prompt = """
 """
 
 
-async def analyse(resume, job_description):
+async def analyse(files: List, texts=List):
     model = "gemini-2.5-flash"
     gemini = Gemini(api_key, model)
-    contents = [prompt, resume, job_description]
+    contents = [prompt]
+    contents.extend(texts)
+    for file in files:
+        contents.append(
+            types.Part.from_bytes(
+                data=file,
+                mime_type="application/pdf",
+            )
+        )
 
-    # about_me_dir = pathlib.Path("about_me")
-    # pdf_files = list(about_me_dir.glob("*.pdf"))
-    #
-    #
-    # for filepath in pdf_files:
-    #     contents.append(
-    #         types.Part.from_bytes(
-    #             data=filepath.read_bytes(),
-    #             mime_type="application/pdf",
-    #         )
-    #     )
     res = await gemini.query(contents) # schema=None
     print(res.response)
     return res.response
