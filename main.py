@@ -5,7 +5,7 @@ from typing import List, Optional
 from analyser import analyse
 
 
-# 응답 데이터 구조만 Pydantic 사용
+    # 응답 데이터 구조만 Pydantic 사용
 class AnalyseResponse(BaseModel):
     overall_score: int
     category_scores: dict
