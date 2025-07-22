@@ -1,10 +1,6 @@
-import asyncio
-import os
-
-from dotenv import load_dotenv
 from google import genai
-from pydantic import BaseModel
 from google.genai import types
+from pydantic import BaseModel
 
 
 class DefaultSchema(BaseModel):
@@ -16,13 +12,14 @@ class Gemini:
         self.client = genai.Client(api_key=api_key)
         self.model = model
 
-    async def query(self, contents, schema=DefaultSchema):
+    async def query(self, contents, language="Korean", schema=DefaultSchema):
         response = await self.client.aio.models.generate_content(
             model=self.model,
             contents=contents,
             config=types.GenerateContentConfig(
-                system_instruction="Answer in Korean.",
-                response_mime_type="application/json", response_schema=schema
+                system_instruction=f"Answer in {language}.",
+                response_mime_type="application/json",
+                response_schema=schema,
             ),
         )
         return response.parsed
