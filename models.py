@@ -32,4 +32,4 @@ class JobAnalysis(BaseModel):
     total_match_level: MatchLevel
     key_strengths: List[str]
     key_concerns: List[str]
-
+    summary: str
