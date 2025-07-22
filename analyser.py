@@ -11,9 +11,9 @@ from models import JobAnalysis
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
-# 수정 필요
 prompt = """
-나에 대한 자료와 job posting을 보고 적합성을 평가하고 지원할지 말지 결정해봐
+Compare my resume with this job posting and evaluate each criterion for compatibility.
+Provide an objective assessment without feeling obligated to be overly positive to the user.
 """
 
 
