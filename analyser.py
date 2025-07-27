@@ -22,7 +22,7 @@ Avoid emotional encouragement or excessive criticism. Provide a cool-headed, con
 
 
 async def analyse(files: List, texts=List, language="Korean"):
-    model = "gemini-2.5-flash"
+    model = "gemini-2.5-pro"
     gemini = Gemini(api_key, model)
     contents = [prompt]
     contents.extend(texts)
