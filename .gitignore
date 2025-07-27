@@ -1,4 +1,5 @@
-.env
-.idea/
 .venv/
+.idea/
+.env
+
 /about_me   

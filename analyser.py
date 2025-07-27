@@ -17,7 +17,7 @@ Provide an objective assessment without feeling obligated to be overly positive 
 """
 
 
-async def analyse(files: List, texts=List):
+async def analyse(files: List, texts=List, language="Korean"):
     model = "gemini-2.5-flash"
     gemini = Gemini(api_key, model)
     contents = [prompt]
@@ -30,7 +30,7 @@ async def analyse(files: List, texts=List):
             )
         )
 
-    res = await gemini.query(contents, schema=JobAnalysis)
+    res = await gemini.query(contents, schema=JobAnalysis, language=language)
     print(res)
     return res
 
