@@ -22,21 +22,45 @@ Avoid emotional encouragement or excessive criticism. Provide a cool-headed, con
 
 
 async def analyse(files: List, texts=List, language="Korean"):
-    model = "gemini-2.5-pro"
-    gemini = Gemini(api_key, model)
-    contents = [prompt]
-    contents.extend(texts)
-    for file in files:
-        contents.append(
-            types.Part.from_bytes(
-                data=file,
-                mime_type="application/pdf",
+    try:
+        model = "gemini-2.5-pro"
+        gemini = Gemini(api_key, model)
+        contents = [prompt]
+        contents.extend(texts)
+        for file in files:
+            contents.append(
+                types.Part.from_bytes(
+                    data=file,
+                    mime_type="application/pdf",
+                )
             )
-        )
 
-    res = await gemini.query(contents, schema=JobAnalysis, language=language)
-    print(res)
-    return res
+        res = await gemini.query(contents, schema=JobAnalysis, language=language)
+        print(res)
+        
+        if res is None:
+            raise ValueError("Gemini API returned None response")
+        
+        return res
+    except Exception as e:
+        print(f"Error in analyse function: {e}")
+        # Return a default JobAnalysis object instead of None
+        from models import MatchLevel, Criteria
+        return JobAnalysis(
+            company_name="Unknown",
+            role_name="Unknown",
+            role_fit=Criteria(name="Role Fit", match_level=MatchLevel.UNKNOWN, comment="Analysis failed"),
+            tech_stack=Criteria(name="Tech Stack", match_level=MatchLevel.UNKNOWN, comment="Analysis failed"),
+            career_education=Criteria(name="Career/Education", match_level=MatchLevel.UNKNOWN, comment="Analysis failed"),
+            location_match=Criteria(name="Location", match_level=MatchLevel.UNKNOWN, comment="Analysis failed"),
+            compensation_benefits=Criteria(name="Compensation", match_level=MatchLevel.UNKNOWN, comment="Analysis failed"),
+            company_culture=Criteria(name="Culture", match_level=MatchLevel.UNKNOWN, comment="Analysis failed"),
+            growth_potential=Criteria(name="Growth", match_level=MatchLevel.UNKNOWN, comment="Analysis failed"),
+            total_match_level=MatchLevel.UNKNOWN,
+            key_strengths=["Analysis temporarily unavailable"],
+            key_concerns=["Please try again later"],
+            summary=f"Analysis failed due to technical error: {str(e)}"
+        )
 
 
 async def main():
